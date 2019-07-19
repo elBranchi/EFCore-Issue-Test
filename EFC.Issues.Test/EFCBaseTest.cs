@@ -20,11 +20,10 @@ namespace EFC.Issues.Test
         //Modify connection string to match target Database
         protected static string SqlServerConnectionString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=db_efc_issues;Integrated Security=True";
 
-        //protected EFCContext InMemoryContext;
 
         protected static InMemoryDatabaseRoot inMemoryDbRoot = new InMemoryDatabaseRoot();
 
-        protected static EFCContext GetEFCContext(DBProvider dBProvider, string connectionString = null, 
+        protected static EFCContext GetEFCContext(DBProvider dBProvider, string connectionString = null,
             [CallerFilePath]string callingFile = null)
         {
 
@@ -33,10 +32,11 @@ namespace EFC.Issues.Test
             var services = new ServiceCollection();
 
             services.AddLogging(
-                loggingBuilder => {
+                loggingBuilder =>
+                {
                     loggingBuilder.SetMinimumLevel(LogLevel.Trace);
                     loggingBuilder.AddConsole();
-                    });
+                });
             var serviceProvider = services.BuildServiceProvider();
             var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
 
@@ -48,7 +48,6 @@ namespace EFC.Issues.Test
             switch (dBProvider)
             {
                 case DBProvider.InMemory:
-                    //optionsBuilder.usein
                     var fileName = System.IO.Path.GetFileNameWithoutExtension(callingFile);
                     var dbName = $"db_{fileName}";
                     optionsBuilder.UseInMemoryDatabase(dbName, inMemoryDbRoot);
