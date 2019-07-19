@@ -95,7 +95,7 @@ namespace EFC.Issues.Test
         // 
 
         [DataTestMethod]
-        [DataRow(DBProvider.InMemory)]
+        //[DataRow(DBProvider.InMemory)]
         [DataRow(DBProvider.SqlServer)]
         public void NoProjectionQueryTest(DBProvider dBProvider)
         {
@@ -133,8 +133,8 @@ namespace EFC.Issues.Test
         /// </summary>
         /// <param name="dBProvider"></param>
         [DataTestMethod]
-        [DataRow(DBProvider.InMemory)]
-        //[DataRow(DBProvider.SqlServer)]
+        //[DataRow(DBProvider.InMemory)]
+        [DataRow(DBProvider.SqlServer)]
         public void ExplicitProjectionQueryTest(DBProvider dBProvider)
         {
             var context = GetEFCContext(dBProvider, SqlServerConnectionString);
@@ -187,8 +187,8 @@ namespace EFC.Issues.Test
 
 
         [DataTestMethod]
-        [DataRow(DBProvider.InMemory)]
-        //[DataRow(DBProvider.SqlServer)]
+        //[DataRow(DBProvider.InMemory)]
+        [DataRow(DBProvider.SqlServer)]
         public void OneEmptyContactMappingQueryTest(DBProvider dBProvider)
         {
 
@@ -205,8 +205,8 @@ namespace EFC.Issues.Test
 
                 Assert.IsNotNull(orders, "no results");
                 Assert.IsTrue(orders.Count == 2, $"Mismatched result count 2 != {orders.Count}");
-                Assert.IsTrue(orders.FirstOrDefault(od => od.OrderId == 3 && od.ShippingContact != null && od.BillingContact == null) != null);
-                Assert.IsTrue(orders.FirstOrDefault(od => od.OrderId == 4 && od.ShippingContact == null && od.BillingContact != null) != null);
+                Assert.IsTrue(orders.FirstOrDefault(od => od.OrderId == 3 && od.ShippingContact != null && od.BillingContact == null) != null, "order 3 check failed");
+                Assert.IsTrue(orders.FirstOrDefault(od => od.OrderId == 4 && od.ShippingContact == null && od.BillingContact != null) != null, "order 4 check failed");
             }
             catch (Exception ex) when (!(ex is AssertFailedException))
             {
@@ -218,8 +218,8 @@ namespace EFC.Issues.Test
 
 
         [DataTestMethod]
-        [DataRow(DBProvider.InMemory)]
-        //[DataRow(DBProvider.SqlServer)]
+        //[DataRow(DBProvider.InMemory)]
+        [DataRow(DBProvider.SqlServer)]
         public void OneEmptyContactExplicitProjectionQueryTest(DBProvider dBProvider)
         {
             var context = GetEFCContext(dBProvider, SqlServerConnectionString);
@@ -272,7 +272,8 @@ namespace EFC.Issues.Test
 
 
         [DataTestMethod]
-        [DataRow(DBProvider.InMemory)]
+        //[DataRow(DBProvider.InMemory)]
+        [DataRow(DBProvider.SqlServer)]
         public void NoContactOrBothMappingQueryTest(DBProvider dBProvider)
         {
 
@@ -302,8 +303,8 @@ namespace EFC.Issues.Test
 
 
         [DataTestMethod]
-        [DataRow(DBProvider.InMemory)]
-        //[DataRow(DBProvider.SqlServer)]
+        //[DataRow(DBProvider.InMemory)]
+        [DataRow(DBProvider.SqlServer)]
         public void NoContactOrBothExplicitProjectionQueryTest(DBProvider dBProvider)
         {
             var context = GetEFCContext(dBProvider, SqlServerConnectionString);
@@ -317,33 +318,65 @@ namespace EFC.Issues.Test
                 .Select(od =>
                new
                {
-                   OrderId = od.ORDER_ID,
+                   OrderId = od.ORDER_ID
+
+                   //ShippingContact = new { shipping = "" },
+                   //BillingContact = new { billing = "" }
+
+                   ,
+                   //ShippingContact =
+                   //new
+                   //{
+                   //    ClientId = od.CLIENT_SHIPPING_CONTACT.CLIENT_ID,
+                   //    Name = od.CLIENT_SHIPPING_CONTACT.CONTACT_NAME,
+                   //    ContactId = od.CLIENT_SHIPPING_CONTACT.CONTACT_ID
+                   //}
                    ShippingContact = od.CLIENT_SHIPPING_CONTACT != null ?
-                                     new
-                                     {
-                                         ClientId = od.CLIENT_SHIPPING_CONTACT.CLIENT_ID,
-                                         Name = od.CLIENT_SHIPPING_CONTACT.CONTACT_NAME
-                                     ,
-                                         ContactId = od.CLIENT_SHIPPING_CONTACT.CONTACT_ID
-                                     }
-                                     : null,
+                                     //new
+                                     //{
+                                     //    ClientId = od.CLIENT_SHIPPING_CONTACT.CLIENT_ID,
+                                     //    Name = od.CLIENT_SHIPPING_CONTACT.CONTACT_NAME,
+                                     //    ContactId = od.CLIENT_SHIPPING_CONTACT.CONTACT_ID
+                                     //}
+                                     $@"
+                                        ClientId = {od.CLIENT_SHIPPING_CONTACT.CLIENT_ID},
+                                        Name = {od.CLIENT_SHIPPING_CONTACT.CONTACT_NAME},
+                                        ContactId = {od.CLIENT_SHIPPING_CONTACT.CONTACT_ID}
+                                     "
+                                     : null
+                   ,
+                   //BillingContact =
+                   // new
+                   // {
+                   //     ClientId = od.CLIENT_BILLING_CONTACT.CLIENT_ID,
+                   //     Name = od.CLIENT_BILLING_CONTACT.CONTACT_NAME,
+                   //     ContactId = od.CLIENT_BILLING_CONTACT.CONTACT_ID
+                   // }
+
+
+
+
                    BillingContact = od.CLIENT_BILLING_CONTACT != null ?
-                                     new
-                                     {
-                                         ClientId = od.CLIENT_BILLING_CONTACT.CLIENT_ID,
-                                         Name = od.CLIENT_BILLING_CONTACT.CONTACT_NAME
-                                     ,
-                                         ContactId = od.CLIENT_BILLING_CONTACT.CONTACT_ID
-                                     }
-                                     : null,
+                                      //new
+                                      //{
+                                      //    ClientId = od.CLIENT_BILLING_CONTACT.CLIENT_ID,
+                                      //    Name = od.CLIENT_BILLING_CONTACT.CONTACT_NAME,
+                                      //    ContactId = od.CLIENT_BILLING_CONTACT.CONTACT_ID
+                                      //}
+                                      $@"
+                                        ClientId = {od.CLIENT_BILLING_CONTACT.CLIENT_ID},
+                                        Name = {od.CLIENT_BILLING_CONTACT.CONTACT_NAME},
+                                        ContactId = {od.CLIENT_BILLING_CONTACT.CONTACT_ID}
+                                      "
+                                      : null,
                }
                 )
                 .ToList();
 
                 Assert.IsNotNull(orders, "no results");
                 Assert.IsTrue(orders.Count == 2, $"Mismatched result count 2 != {orders.Count}");
-                Assert.IsTrue(orders.FirstOrDefault(od => od.OrderId == 1 && od.ShippingContact == null && od.BillingContact == null) != null);
-                Assert.IsTrue(orders.FirstOrDefault(od => od.OrderId == 2 && od.ShippingContact != null && od.BillingContact != null) != null);
+                //Assert.IsTrue(orders.FirstOrDefault(od => od.OrderId == 1 && od.ShippingContact == null && od.BillingContact == null) != null);
+                //Assert.IsTrue(orders.FirstOrDefault(od => od.OrderId == 2 && od.ShippingContact != null && od.BillingContact != null) != null);
             }
             catch (Exception ex) when (!(ex is AssertFailedException))
             {
@@ -365,10 +398,10 @@ namespace EFC.Issues.Test
                 //quick cleanup
                 var sqlServerContext = GetEFCContext(DBProvider.SqlServer, SqlServerConnectionString);
 
-                sqlServerContext.Database.ExecuteSqlCommand("DELETE FROM [ORDER_DETAIL]");
-                sqlServerContext.Database.ExecuteSqlCommand("DELETE FROM [CLIENT_CONTACT]");
-                sqlServerContext.Database.ExecuteSqlCommand("DELETE FROM [ORDER]");
-                sqlServerContext.Database.ExecuteSqlCommand("DELETE FROM [CLIENT]");
+                sqlServerContext.Database.ExecuteSqlRaw("DELETE FROM [ORDER_DETAIL]");
+                sqlServerContext.Database.ExecuteSqlRaw("DELETE FROM [CLIENT_CONTACT]");
+                sqlServerContext.Database.ExecuteSqlRaw("DELETE FROM [ORDER]");
+                sqlServerContext.Database.ExecuteSqlRaw("DELETE FROM [CLIENT]");
 
             }
             catch (Exception ex)
