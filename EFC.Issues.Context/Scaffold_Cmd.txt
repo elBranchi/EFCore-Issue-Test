@@ -1,0 +1,2 @@
+﻿@echo on
+dotnet ef dbcontext scaffold "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=db_efc_issues;Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer --use-database-names -c EFCContext  -t CLIENT -t CLIENT_CONTACT -t ORDER -t ORDER_DETAIL

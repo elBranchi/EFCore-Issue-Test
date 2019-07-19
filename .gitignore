@@ -1,0 +1,7 @@
+#Quick-n-dirty gitignore file
+
+[Dd]ebug/
+[Bb]in/
+[Oo]bj/
+
+.vs/
